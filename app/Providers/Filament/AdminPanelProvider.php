@@ -6,12 +6,10 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Notifications\Notification;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -34,38 +32,68 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+
+            /**
+             * Inject meta tag berisi user_id & roles untuk digunakan oleh Echo JS
+             * serta script listener untuk meneruskan event ke Filament notification
+             */
             ->renderHook(
-                PanelsRenderHook::TOPBAR_END,
-                function() {
-                    if(!Auth::check()) {
-                        return null;
+                'panels::body.end',
+                function () {
+                    if (! Auth::check()) {
+                        return '';
+                    }
+
+                    $user  = Auth::user();
+                    $roles = $user->getRoleNames()->implode(',');
+
+                    return \Illuminate\Support\Facades\Blade::render('
+<meta name="auth-user" data-id="{{ $id }}" data-roles="{{ $roles }}">
+@vite(["resources/js/app.js", "resources/css/app.css"])
+<script>
+window.addEventListener("notify", function(event) {
+    if (typeof window.Livewire !== "undefined") {
+        window.Livewire.dispatch("show-toast-notification", { 
+            title: event.detail.title, 
+            message: event.detail.body 
+        });
+    }
+});
+</script>
+', ["id" => $user->id, "roles" => $roles]);
+                }
+            )
+
+            /**
+             * Render Livewire notification icon di topbar navbar (hanya untuk reporter)
+             */
+            ->renderHook(
+                'panels::global-search.after',
+                function () {
+                    if (! Auth::check()) {
+                        return '';
                     }
 
                     $user = Auth::user();
 
-                    // Ambil unread notification
-                    $notifications = $user->unreadNotifications;
+                    if (! $user->hasRole('reporter')) {
+                        return '';
+                    }
 
-                    foreach ($notifications as $notification) {
-
-                    Notification::make()
-                ->title('Artikel Dipublish')
-                ->body($notification->data['message'] ?? 'Artikel telah dipublish.')
-                ->success()
-                ->send();
-
-                // Langsung mark as read setelah ditampilkan
-                $notification->markAsRead();
-                }
-                return null;
+                    return \Illuminate\Support\Facades\Blade::render('
+<div class="flex items-center pr-2">
+    @livewire(\App\Livewire\ReporterNotifications::class)
+</div>
+');
                 }
             )
-            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
-            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
+
+            ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
+            ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
