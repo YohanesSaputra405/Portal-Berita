@@ -46,6 +46,7 @@ class PostForm
 
                 FileUpload::make('featured_image')
                     ->image()
+                    ->disk('public')
                     ->directory('posts')
                     ->maxSize(2048),
 

@@ -67,6 +67,11 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(PostHistory::class, 'actor_id');
     }
+
+    public function bookmarkedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'bookmarks')->withTimestamps();
+    }
     
     public function canAccessPanel(Panel $panel): bool
     {

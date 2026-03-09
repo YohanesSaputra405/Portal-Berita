@@ -59,7 +59,7 @@
                     Selamat datang kembali, <span class="font-semibold text-gray-900 dark:text-white">{{ Auth::user()->name }}</span>
                 </div>
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('home') }}" class="text-sm font-medium text-amber-600 hover:text-amber-700">Lihat Situs</a>
+                    <a href="{{ route('homepage') }}" class="text-sm font-medium text-amber-600 hover:text-amber-700">Lihat Situs</a>
                     <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-xs font-bold text-gray-500">
                         {{ substr(Auth::user()->name, 0, 1) }}
                     </div>
