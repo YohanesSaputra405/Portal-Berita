@@ -15,76 +15,133 @@
 
     <!-- Styles & Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Theme Flicker Prevention -->
+    <script>
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark')
+        } else {
+            document.documentElement.classList.remove('dark')
+        }
+    </script>
     
 </head>
-<body class="antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-300">
-    <div x-data="{ mobileMenu: false, scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
+<body class="antialiased bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-500">
+    <div x-data="{ 
+            darkMode: localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
+            mobileMenu: false, 
+            scrolled: false,
+            toggleTheme() {
+                this.darkMode = !this.darkMode;
+                localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
+            }
+         }" 
+         x-init="$watch('darkMode', val => val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'))"
+         @scroll.window="scrolled = (window.pageYOffset > 20)">
         
         <!-- Navbar -->
-        <nav :class="{ 'glass py-2': scrolled, 'bg-white py-4 border-b border-slate-100': !scrolled }" 
+        <nav :class="{ 'glass py-2 border-b border-white/10': scrolled, 'bg-white dark:bg-slate-900 py-5 border-b border-slate-100 dark:border-slate-800': !scrolled }" 
              class="fixed top-0 w-full z-50 transition-all duration-300">
             <div class="max-w-7xl mx-auto px-4 flex justify-between items-center">
-                <a href="{{ route('homepage') }}" class="flex items-center gap-2 group">
-                    <div class="w-10 h-10 bg-kompas-blue rounded-lg flex items-center justify-center text-white font-black text-xl shadow-lg group-hover:scale-105 transition-transform">P</div>
-                    <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white">PORTAL<span class="text-kompas-blue">BERITA</span></span>
+                <!-- Branding -->
+                <a href="{{ route('homepage') }}" class="flex items-center gap-3 group">
+                    <div class="w-12 h-12 bg-kompas-blue rounded-xl flex items-center justify-center text-white font-black text-2xl shadow-xl group-hover:rotate-6 transition-all duration-500">P</div>
+                    <div class="flex flex-col -space-y-1">
+                        <span class="text-2xl font-black tracking-tighter text-slate-900 dark:text-white uppercase leading-none">{{ config('app.name') }}</span>
+                        <span class="text-[10px] font-bold text-kompas-blue tracking-[0.2em] uppercase">Trusted News Portal</span>
+                    </div>
                 </a>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-6">
-                    @foreach(($categories ?? collect())->take(5) as $cat)
-                        <a href="{{ route('category.show', $cat->slug) }}" class="text-sm font-medium hover:text-blue-600 transition-colors">{{ $cat->name }}</a>
-                    @endforeach
+                <div class="hidden md:flex items-center space-x-8">
+                    <div class="flex items-center space-x-6 mr-6">
+                        @foreach(collect($categories ?? [])->take(5) as $cat)
+                            <a href="{{ route('category.show', $cat->slug) }}" 
+                               class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-kompas-blue dark:hover:text-kompas-blue transition-colors py-2 relative group uppercase tracking-wide">
+                                {{ $cat->name }}
+                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-kompas-blue transition-all group-hover:w-full"></span>
+                            </a>
+                        @endforeach
 
-                    @if($categories->count() > 5)
-                    <div x-data="{ open: false }" class="relative">
-                        <button @click="open = !open" 
-                                @click.away="open = false" 
-                                class="flex items-center text-sm font-medium hover:text-blue-600 transition-colors">
-                            Lainnya
-                            <svg class="w-4 h-4 ml-1 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        </button>
-                        <div x-show="open" 
-                             class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden z-50">
-                            @foreach($categories->slice(5) as $cat)
-                                <a href="{{ route('category.show', $cat->slug) }}" class="block px-4 py-3 text-sm hover:bg-slate-50 dark:hover:bg-slate-800 transition-all border-b border-slate-50 last:border-0">
-                                    {{ $cat->name }}
-                                </a>
-                            @endforeach
+                        @if(collect($categories ?? [])->count() > 5)
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" @click.away="open = false" 
+                                    class="flex items-center text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-kompas-blue transition-colors uppercase tracking-wide">
+                                Lainnya
+                                <svg class="w-4 h-4 ml-1 transition-transform" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                            </button>
+                            <div x-show="open" 
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 class="absolute right-0 mt-3 w-56 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl p-2 z-50 overflow-hidden">
+                                @foreach(collect($categories ?? [])->slice(5) as $cat)
+                                    <a href="{{ route('category.show', $cat->slug) }}" 
+                                       class="block px-4 py-3 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all uppercase tracking-wide">
+                                        {{ $cat->name }}
+                                    </a>
+                                @endforeach
+                            </div>
                         </div>
-                    </div>
-                    @endif
-
-                    <button class="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition ml-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </button>
-                    
-                    @auth
-                        <a href="{{ route('dashboard') }}" class="btn-primary px-4 py-2 rounded-lg shadow-lg hover:bg-blue-700 transition">Dashboard</a>
-                    @else
-                        <div class="h-4 w-px bg-slate-200 dark:bg-slate-800 mx-2"></div>
-                        <a href="{{ route('login') }}" class="text-sm font-bold text-kompas-blue hover:text-blue-800">Masuk</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-sm font-bold text-slate-600 hover:text-kompas-blue ml-4">Daftar</a>
                         @endif
-                    @endauth
+                    </div>
+
+                    <div class="flex items-center space-x-3 pl-6 border-l border-slate-200 dark:border-slate-800">
+                        <!-- Theme Toggle -->
+                        <button @click="toggleTheme()" 
+                                class="p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full hover:bg-kompas-blue hover:text-white dark:hover:bg-kompas-blue dark:hover:text-white transition-all shadow-sm group">
+                            <svg x-show="!darkMode" class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                            <svg x-show="darkMode" class="w-5 h-5 group-hover:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-9h1M3 9h1m17.364 7.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        </button>
+
+                        <button class="p-2.5 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-full hover:bg-kompas-blue hover:text-white transition-all shadow-sm">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </button>
+                        
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="px-6 py-2.5 bg-kompas-blue hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 transition-all text-sm uppercase tracking-wide">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-sm font-black text-kompas-blue hover:text-blue-800 uppercase tracking-widest px-4">Masuk</a>
+                            @if (Route::has('register'))
+                                <a href="{{ route('register') }}" class="px-6 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl shadow-lg transition-all text-sm uppercase tracking-wide">Daftar</a>
+                            @endif
+                        @endauth
+                    </div>
                 </div>
 
                 <!-- Mobile Trigger -->
-                <button @click="mobileMenu = !mobileMenu" class="md:hidden p-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
+                <div class="flex items-center space-x-3 md:hidden">
+                    <button @click="toggleTheme()" class="p-2 text-slate-500 dark:text-slate-400">
+                        <svg x-show="!darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                        <svg x-show="darkMode" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 18v1m9-9h1M3 9h1m17.364 7.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </button>
+                    <button @click="mobileMenu = !mobileMenu" class="p-2 text-slate-900 dark:text-white">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Mobile Menu -->
             <div x-show="mobileMenu" 
-                 x-transition:enter="transition ease-out duration-200"
-                 x-transition:enter-start="opacity-0 -translate-y-4"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 -translate-y-10"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 class="md:hidden glass dark:dark-glass absolute top-full w-full border-t">
-                <div class="flex flex-col p-4 space-y-4">
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-10"
+                 class="md:hidden glass dark:dark-glass absolute top-full w-full border-t border-slate-100 dark:border-slate-800 shadow-2xl">
+                <div class="flex flex-col p-6 space-y-6">
                     @foreach($categories ?? [] as $cat)
-                        <a href="{{ route('category.show', $cat->slug) }}" class="text-lg font-medium">{{ $cat->name }}</a>
+                        <a href="{{ route('category.show', $cat->slug) }}" class="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tighter">{{ $cat->name }}</a>
                     @endforeach
+                    <hr class="border-slate-100 dark:border-slate-800">
+                    <div class="flex flex-col space-y-4">
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="text-lg font-bold text-kompas-blue">DASHBOARD</a>
+                        @else
+                            <a href="{{ route('login') }}" class="text-lg font-bold text-kompas-blue uppercase">MASUK</a>
+                            <a href="{{ route('register') }}" class="text-lg font-bold text-slate-900 dark:text-white uppercase">DAFTAR</a>
+                        @endauth
+                    </div>
                 </div>
             </div>
         </nav>
