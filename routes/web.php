@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Route;
 // Area Publik (Guest & Semua User)
 // ─────────────────────────────────────────────
 Route::get('/', [PostController::class, 'index'])->name('homepage');
+Route::get('/posts/load-more', [PostController::class, 'loadMore'])->name('posts.load-more');
 Route::get('/category/{category:slug}', [PostController::class, 'category'])->name('category.show');
 Route::get('/post/{post:slug}', [PostController::class, 'show'])->name('post.show');
 

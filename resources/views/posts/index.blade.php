@@ -56,13 +56,42 @@
                 </div>
                 
                 <!-- Load More Button -->
-                <div class="flex justify-center mt-12" x-data="{ loading: false }">
-                    <button @click="loading = true; // Logic to fetch more" 
-                            class="px-8 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-semibold shadow-sm hover:shadow-md transition-all flex items-center space-x-2"
+                <div class="flex justify-center mt-12" 
+                     x-data="{ 
+                        loading: false, 
+                        page: 2, 
+                        hasMore: true,
+                        exclude: [{{ $latest_news->pluck('id')->join(',') }}{{ $headline ? ',' . $headline->id : '' }}],
+                        loadMore() {
+                            if (this.loading || !this.hasMore) return;
+                            this.loading = true;
+                            
+                            fetch(`{{ route('posts.load-more') }}?page=${this.page}&exclude[]=${this.exclude.join('&exclude[]=')}`, {
+                                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.html) {
+                                    document.getElementById('posts-container').insertAdjacentHTML('beforeend', data.html);
+                                    this.page = data.nextPage;
+                                    this.hasMore = data.hasMore;
+                                } else {
+                                    this.hasMore = false;
+                                }
+                                this.loading = false;
+                            })
+                            .catch(() => {
+                                this.loading = false;
+                            });
+                        }
+                     }"
+                     x-show="hasMore">
+                    <button @click="loadMore()" 
+                            class="px-8 py-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold shadow-sm hover:shadow-md hover:border-kompas-blue transition-all flex items-center space-x-2 group"
                             :disabled="loading">
-                        <span x-show="!loading">Muat Lebih Banyak</span>
-                        <span x-show="loading" class="flex items-center">
-                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <span x-show="!loading" class="group-hover:text-kompas-blue">Muat Lebih Banyak</span>
+                        <span x-show="loading" class="flex items-center text-kompas-blue">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>

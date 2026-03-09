@@ -86,4 +86,28 @@ class PostController extends Controller
 
         return view('posts.show', compact('post', 'relatedPosts'));
     }
+
+    /**
+     * Muat lebih banyak artikel via AJAX.
+     */
+    public function loadMore(Request $request)
+    {
+        $page = $request->input('page', 2);
+        $excludeIds = $request->input('exclude', []);
+
+        $posts = Post::published()
+            ->whereNotIn('id', $excludeIds)
+            ->latest('published_at')
+            ->paginate(6, ['*'], 'page', $page);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('posts.partials.load-more-items', compact('posts'))->render(),
+                'hasMore' => $posts->hasMorePages(),
+                'nextPage' => $posts->currentPage() + 1,
+            ]);
+        }
+
+        return abort(404);
+    }
 }
