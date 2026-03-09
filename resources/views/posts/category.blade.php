@@ -3,7 +3,7 @@
         
         <div class="flex items-center gap-4 mb-8 text-sm font-bold uppercase tracking-widest text-slate-400">
             <a href="{{ route('homepage') }}" class="hover:text-kompas-blue transition-colors">Home</a>
-            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
             <span class="text-kompas-blue">Kategori</span>
         </div>
 

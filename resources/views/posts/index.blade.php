@@ -21,7 +21,7 @@
                             </p>
                             <div class="flex items-center gap-6 text-slate-300 text-xs md:text-sm font-semibold pt-2">
                                 <span class="flex items-center gap-2">
-                                    <div class="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px]">{{ substr($headline->author->name, 0, 1) }}</div>
+                                    <div class="w-6 h-6 rounded-full bg-slate-700 dark:bg-slate-600 flex items-center justify-center text-[10px]">{{ substr($headline->author->name, 0, 1) }}</div>
                                     {{ $headline->author->name }}
                                 </span>
                                 <span class="opacity-50">/</span>

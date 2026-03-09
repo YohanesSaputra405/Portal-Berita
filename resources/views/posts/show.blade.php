@@ -15,7 +15,7 @@
                         <a href="{{ route('category.show', $category->slug) }}" class="text-blue-600 font-bold uppercase tracking-wider text-sm">{{ $category->name }}</a>
                     @endforeach
                     
-                    <h1 class="text-3xl md:text-5xl font-bold mt-4 mb-6 leading-tight">
+                    <h1 class="text-3xl md:text-5xl font-bold mt-4 mb-6 leading-tight text-slate-900 dark:text-white">
                         {{ $post->title }}
                     </h1>
 
@@ -26,7 +26,7 @@
                             </div>
                             <div>
                                 <p class="font-bold text-slate-900 dark:text-white">{{ $post->author->name }}</p>
-                                <p class="text-sm text-slate-500">{{ $post->published_at->format('d M Y') }} &bull; {{ number_format($post->views_count) }} views</p>
+                                <p class="text-sm text-slate-500 dark:text-slate-400">{{ $post->published_at->format('d M Y') }} &bull; {{ number_format($post->views_count) }} views</p>
                             </div>
                         </div>
 

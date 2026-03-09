@@ -12,7 +12,7 @@
             </h4>
             <div class="mt-4 flex items-center text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400 gap-2">
                 <span>{{ $post->published_at->translatedFormat('d M Y') }}</span>
-                <span class="w-1 h-1 rounded-full bg-slate-200"></span>
+                <span class="w-1 h-1 rounded-full bg-slate-200 dark:bg-slate-700"></span>
                 <span class="text-kompas-blue">{{ number_format($post->views_count) }} Views</span>
             </div>
         </div>

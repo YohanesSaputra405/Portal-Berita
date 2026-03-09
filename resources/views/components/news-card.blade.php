@@ -1,7 +1,7 @@
 @props(['post'])
 
 <article {{ $attributes->merge(['class' => 'group flex flex-col space-y-4']) }}>
-    <a href="{{ route('post.show', $post->slug) }}" class="block relative overflow-hidden rounded-xl aspect-video bg-slate-200 shadow-sm border border-slate-100 dark:border-slate-800">
+    <a href="{{ route('post.show', $post->slug) }}" class="block relative overflow-hidden rounded-xl aspect-video bg-slate-200 dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-800">
         <img src="{{ $post->featured_image ? asset('storage/' . $post->featured_image) : 'https://placehold.co/600x400?text=No+Image' }}" 
              alt="{{ $post->title }}"
              loading="lazy"
@@ -17,7 +17,7 @@
             @foreach($post->categories->take(1) as $category)
                 <span class="text-kompas-blue">{{ $category->name }}</span>
             @endforeach
-            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <span class="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-700"></span>
             <span class="text-slate-500 normal-case font-medium">{{ $post->published_at->translatedFormat('d M Y') }}</span>
         </div>
         

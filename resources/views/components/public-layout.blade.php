@@ -17,10 +17,13 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Theme Flicker Prevention -->
     <script>
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark')
+        const theme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.style.colorScheme = 'dark';
         } else {
-            document.documentElement.classList.remove('dark')
+            document.documentElement.classList.remove('dark');
+            document.documentElement.style.colorScheme = 'light';
         }
     </script>
     
@@ -35,7 +38,17 @@
                 localStorage.setItem('theme', this.darkMode ? 'dark' : 'light');
             }
          }" 
-         x-init="$watch('darkMode', val => val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark'))"
+         x-init="
+            $watch('darkMode', val => {
+                if (val) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.style.colorScheme = 'dark';
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.style.colorScheme = 'light';
+                }
+            })
+         "
          @scroll.window="scrolled = (window.pageYOffset > 20)">
         
         <!-- Navbar -->
