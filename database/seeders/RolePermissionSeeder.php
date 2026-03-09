@@ -55,14 +55,23 @@ class RolePermissionSeeder extends Seeder
         }
 
         // Roles
-        $user = Role::firstOrCreate(['name' => 'user']);
-        $reporter = Role::firstOrCreate(['name' => 'reporter']);
-        $editor = Role::firstOrCreate(['name' => 'editor']);
-        $admin = Role::firstOrCreate(['name' => 'admin']);
-        $superAdmin = Role::firstOrCreate(['name' => 'super_admin']);
+        $user        = Role::firstOrCreate(['name' => 'user']);
+        $contributor = Role::firstOrCreate(['name' => 'contributor']);
+        $reporter    = Role::firstOrCreate(['name' => 'reporter']);
+        $editor      = Role::firstOrCreate(['name' => 'editor']);
+        $admin       = Role::firstOrCreate(['name' => 'admin']);
+        $superAdmin  = Role::firstOrCreate(['name' => 'super_admin']);
 
         // USER
         $user->syncPermissions([
+            'post.create',
+            'post.submit',
+            'post.view',
+            'post.update',
+        ]);
+
+        // CONTRIBUTOR
+        $contributor->syncPermissions([
             'post.create',
             'post.submit',
             'post.view',

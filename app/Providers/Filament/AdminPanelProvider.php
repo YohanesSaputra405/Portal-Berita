@@ -49,17 +49,7 @@ class AdminPanelProvider extends PanelProvider
 
                     return \Illuminate\Support\Facades\Blade::render('
 <meta name="auth-user" data-id="{{ $id }}" data-roles="{{ $roles }}">
-@vite(["resources/js/app.js", "resources/css/app.css"])
-<script>
-window.addEventListener("notify", function(event) {
-    if (typeof window.Livewire !== "undefined") {
-        window.Livewire.dispatch("show-toast-notification", { 
-            title: event.detail.title, 
-            message: event.detail.body 
-        });
-    }
-});
-</script>
+@vite(["resources/js/filament-notifications.js"])
 ', ["id" => $user->id, "roles" => $roles]);
                 }
             )
