@@ -36,7 +36,7 @@ class PostsTable
                     ->limit(40),
 
                 TextColumn::make('user.name')
-                    ->label('Author')
+                    ->label('Penulis')
                     ->sortable(),
 
                 TextColumn::make('categories.name')
@@ -45,19 +45,14 @@ class PostsTable
                     ->separator(', '),
 
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (PostStatus $state) => $state->label())
                     ->color(fn (PostStatus $state) => $state->color())
                     ->sortable(),
 
-                /*
-                |--------------------------------------------------------------------------
-                | SCHEDULED COLUMN (FIXED & IMPROVED)
-                |--------------------------------------------------------------------------
-                */
-
                 TextColumn::make('scheduled_at')
-                    ->label('Jadwal Publish')
+                    ->label('Jadwal Terbit')
                     ->sortable()
                     ->formatStateUsing(function ($state) {
                         return $state
@@ -71,11 +66,11 @@ class PostsTable
                         }
 
                         if (now()->lt($record->scheduled_at)) {
-                            return 'warning'; // masih akan publish
+                            return 'warning';
                         }
 
                         if ($record->status !== PostStatus::Published) {
-                            return 'danger'; // sudah lewat tapi belum publish
+                            return 'danger';
                         }
 
                         return 'success';
@@ -87,13 +82,14 @@ class PostsTable
                     ->sortable(),
 
                 TextColumn::make('published_at')
-                    ->label('Dipublish')
+                    ->label('Terbit')
                     ->since()
                     ->sortable(),
             ])
 
             ->filters([
-                TrashedFilter::make(),
+                TrashedFilter::make()
+                    ->label('Kotak Sampah'),
 
                 SelectFilter::make('status')
                     ->label('Filter Status')
@@ -105,23 +101,24 @@ class PostsTable
                     ),
             ])
 
-            ->recordActions([
+            ->actions([
 
-                ViewAction::make(),
+                ViewAction::make()
+                    ->label('Lihat')
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
 
                 EditAction::make()
+                    ->label('Ubah')
+                    ->icon('heroicon-o-pencil')
+                    ->color('primary')
                     ->visible(fn ($record) =>
                         Filament::auth()->user()?->can('update', $record)
                     ),
 
-                /*
-                |--------------------------------------------------------------------------
-                | SUBMIT
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('submit')
-                    ->label('Submit')
+                    ->label('Ajukan')
+                    ->icon('heroicon-o-paper-airplane')
                     ->color('warning')
                     ->requiresConfirmation()
                     ->visible(fn ($record) =>
@@ -135,13 +132,9 @@ class PostsTable
                         )
                     ),
 
-                /*
-                |--------------------------------------------------------------------------
-                | APPROVE
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('approve')
+                    ->label('Setujui')
+                    ->icon('heroicon-o-check-circle')
                     ->color('primary')
                     ->requiresConfirmation()
                     ->visible(fn ($record) =>
@@ -155,18 +148,15 @@ class PostsTable
                         )
                     ),
 
-                /*
-                |--------------------------------------------------------------------------
-                | REJECT
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('reject')
+                    ->label('Tolak')
+                    ->icon('heroicon-o-x-circle')
                     ->color('danger')
                     ->requiresConfirmation()
                     ->schema([
                         Textarea::make('note')
                             ->label('Alasan Penolakan')
+                            ->placeholder('Jelaskan mengapa berita ini ditolak...')
                             ->required(),
                     ])
                     ->visible(fn ($record) =>
@@ -189,13 +179,9 @@ class PostsTable
                         ]);
                     }),
 
-                /*
-                |--------------------------------------------------------------------------
-                | START REVIEW
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('startReview')
+                    ->label('Mulai Tinjau')
+                    ->icon('heroicon-o-eye')
                     ->color('warning')
                     ->requiresConfirmation()
                     ->visible(fn ($record) =>
@@ -209,13 +195,9 @@ class PostsTable
                         )
                     ),
 
-                /*
-                |--------------------------------------------------------------------------
-                | FINISH
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('finish')
+                    ->label('Selesai')
+                    ->icon('heroicon-o-check-badge')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn ($record) =>
@@ -229,13 +211,9 @@ class PostsTable
                         )
                     ),
 
-                /*
-                |--------------------------------------------------------------------------
-                | PUBLISH
-                |--------------------------------------------------------------------------
-                */
-
                 Action::make('publish')
+                    ->label('Terbitkan')
+                    ->icon('heroicon-o-globe-alt')
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn ($record) =>
@@ -248,12 +226,6 @@ class PostsTable
                             Filament::auth()->user()
                         )
                     ),
-
-                /*
-                |--------------------------------------------------------------------------
-                | SCHEDULE
-                |--------------------------------------------------------------------------
-                */
 
                 Action::make('schedule')
                     ->label('Jadwalkan')

@@ -2,10 +2,11 @@
 
 namespace App\Filament\Resources\Categories\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
@@ -23,57 +24,62 @@ class CategoriesTable
                     ->sortable(),
 
                 TextColumn::make('slug')
+                    ->label('Slug')
                     ->searchable(),
 
                 TextColumn::make('posts_count')
                     ->counts('posts')
-                    ->label('Jumlah Artikel'),
+                    ->label('Jumlah Berita')
+                    ->badge(),
 
                 TextColumn::make('created_at')
+                    ->label('Dibuat Pada')
                     ->dateTime('d M Y')
                     ->sortable(),
             ])
             ->filters([
                 //
             ])
-            ->recordActions([
+            ->actions([
+                ViewAction::make()
+                    ->label('Lihat')
+                    ->icon('heroicon-o-eye')
+                    ->color('info'),
+
                 EditAction::make()
-                ->visible(fn () =>
-                        Filament::auth()->user()?->can('category.update')
-                    ),
+                    ->label('Ubah')
+                    ->icon('heroicon-o-pencil')
+                    ->color('primary')
+                    ->visible(fn() => Filament::auth()->user()?->can('category.update')),
 
                 DeleteAction::make()
-                    ->visible(fn () =>
-                        Filament::auth()->user()?->can('category.delete')
-                    )
+                    ->label('Hapus')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->visible(fn() => Filament::auth()->user()?->can('category.delete'))
                     ->before(function ($record) {
-
                         if ($record->posts()->count() > 0) {
-
                             Notification::make()
                                 ->title('Tidak bisa menghapus kategori')
-                                ->body('Kategori masih digunakan oleh artikel.')
+                                ->body('Kategori ini masih memiliki berita terkait.')
                                 ->danger()
                                 ->send();
 
-                            return false; // Stop delete
+                            return false;
                         }
                     }),
-
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->visible(fn () =>
-                            Filament::auth()->user()?->can('category.delete')
-                        )
-                        ->before(function ($records){
+                        ->label('Hapus Terpilih')
+                        ->visible(fn() => Filament::auth()->user()?->can('category.delete'))
+                        ->before(function ($records) {
                             foreach ($records as $record) {
-                                if ($record->post()->count() > 0) {
-
-                                Notification::make()
+                                if ($record->posts()->count() > 0) {
+                                    Notification::make()
                                         ->title('Gagal menghapus')
-                                        ->body('Salah satu kategori masih dipakai artikel.')
+                                        ->body('Salah satu kategori masih memiliki berita terkait.')
                                         ->danger()
                                         ->send();
 

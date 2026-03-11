@@ -12,21 +12,22 @@ class CategoryForm
     {
         return $schema
             ->components([
-                TextInput::make('name')
-                    ->label('Nama Kategori')
-                    ->required()
-                    ->maxLength(255)
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(fn ($state, callable $set) =>
-                        $set('slug', Str::slug($state))
-                    ),
+                \Filament\Forms\Components\Section::make('Informasi Kategori')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nama Kategori')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
 
-                TextInput::make('slug')
-                    ->disabled()
-                    ->dehydrated()
-                    ->unique(ignoreRecord: true)
-                    ->maxLength(255),
-            ])
-            ->columns(2);
+                        TextInput::make('slug')
+                            ->label('Slug / URL')
+                            ->disabled()
+                            ->dehydrated()
+                            ->unique(ignoreRecord: true)
+                            ->maxLength(255),
+                    ])->columns(2),
+            ]);
     }
 }

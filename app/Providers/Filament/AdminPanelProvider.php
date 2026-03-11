@@ -29,9 +29,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->brandName('Portal Berita Admin')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
+                'gray' => Color::Slate,
             ])
+            ->font('Inter')
 
             /**
              * Inject meta tag berisi user_id & roles untuk digunakan oleh Echo JS
@@ -85,8 +88,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                \App\Filament\Widgets\WelcomeBanner::class,
+                \App\Filament\Widgets\StatsOverview::class,
+                \App\Filament\Widgets\QuickActions::class,
             ])
             ->middleware([
                 EncryptCookies::class,
