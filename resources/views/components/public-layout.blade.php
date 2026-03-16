@@ -14,6 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Styles & Scripts -->
+    @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Theme Flicker Prevention -->
     <script>
@@ -245,5 +246,6 @@
             </div>
         </footer>
     </div>
+    @livewireScripts
 </body>
 </html>

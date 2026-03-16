@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Illuminate\Support\Str;
 
 class CategoryForm
@@ -12,7 +13,7 @@ class CategoryForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Section::make('Informasi Kategori')
+                Section::make('Informasi Kategori')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama Kategori')

@@ -31,27 +31,32 @@ class CategoryResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Filament::auth()->user()?->can('category.view') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('category.view') ?? false);
     }
 
     public static function canViewAny(): bool
     {
-        return Filament::auth()->user()?->can('category.view') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('category.view') ?? false);
     }
 
     public static function canCreate(): bool
     {
-        return Filament::auth()->user()?->can('category.create') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('category.create') ?? false);
     }
 
     public static function canEdit($record): bool
     {
-        return Filament::auth()->user()?->can('category.update') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('category.update') ?? false);
     }
 
     public static function canDelete($record): bool
     {
-        return Filament::auth()->user()?->can('category.delete') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('category.delete') ?? false);
     }
 
     public static function form(Schema $schema): Schema

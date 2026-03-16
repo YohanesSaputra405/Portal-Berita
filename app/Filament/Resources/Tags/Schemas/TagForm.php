@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Tags\Schemas;
 
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -12,7 +13,7 @@ class TagForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Section::make('Informasi Tag')
+                Section::make('Informasi Tag')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama Tag')

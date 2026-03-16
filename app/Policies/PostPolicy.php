@@ -46,8 +46,8 @@ class PostPolicy
             return false;
         }
 
-        if ($user->hasRole(['super_admin', 'admin'])) {
-            return false;
+        if ($user->hasAnyRole(['super_admin', 'admin'])) {
+            return true;
         }
 
         if ($user->hasRole('user')) {

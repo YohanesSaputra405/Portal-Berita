@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Livewire\Livewire;
+use App\Models\Comment;
+use App\Observers\CommentObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Comment::observe(CommentObserver::class);
+
         \Illuminate\Support\Facades\View::composer('components.public-layout', function ($view) {
             $categories = \Illuminate\Support\Facades\Cache::remember('navbar_categories', 60 * 60, function () {
                 return \App\Models\Category::has('posts')->take(15)->get();

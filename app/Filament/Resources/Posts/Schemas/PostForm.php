@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -20,7 +21,7 @@ class PostForm
 
         return $schema
             ->components([
-                \Filament\Forms\Components\Section::make('Konten Berita')
+                Section::make('Konten Berita')
                     ->description('Tulis konten berita Anda di sini.')
                     ->schema([
                         TextInput::make('title')
@@ -51,7 +52,7 @@ class PostForm
                             ->columnSpanFull(),
                     ])->columns(2),
 
-                \Filament\Forms\Components\Section::make('Meta & Kategori')
+                Section::make('Meta & Kategori')
                     ->description('Kelola metadata dan kategori berita.')
                     ->schema([
                         FileUpload::make('featured_image')

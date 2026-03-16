@@ -20,7 +20,7 @@ class Comment extends Model
     ];
 
     protected $casts = [
-        'status' => PostStatus::class,
+        'status' => CommentStatus::class,
     ];
 
     /**

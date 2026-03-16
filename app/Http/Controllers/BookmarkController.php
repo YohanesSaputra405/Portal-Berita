@@ -14,6 +14,7 @@ class BookmarkController extends Controller
     public function index()
     {
         $bookmarks = Auth::user()->bookmarkedPosts()
+            ->with(['author', 'categories'])
             ->latest('bookmarks.created_at')
             ->paginate(12);
 

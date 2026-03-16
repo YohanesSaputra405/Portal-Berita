@@ -38,7 +38,7 @@ class StatsOverview extends BaseWidget
 
         if ($user->hasRole('editor')) {
             return [
-                Stat::make('Antrean Tinjauan', Post::where('status', PostStatus::Pending)->count())
+                Stat::make('Antrean Tinjauan', Post::where('status', PostStatus::Approved)->count())
                     ->description('Perlu segera ditinjau')
                     ->descriptionIcon('heroicon-m-clock')
                     ->color('warning'),

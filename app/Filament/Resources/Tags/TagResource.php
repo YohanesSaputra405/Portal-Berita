@@ -31,27 +31,32 @@ class TagResource extends Resource
 
     public static function shouldRegisterNavigation(): bool
     {
-        return Filament::auth()->user()?->can('tag.view') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('tag.view') ?? false);
     }
     
     public static function canCreate(): bool
     {
-        return Filament::auth()->user()?->can('tag.create') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('tag.create') ?? false);
     }
 
     public static function canViewAny(): bool
     {
-        return Filament::auth()->user()?->can('tag.view') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('tag.view') ?? false);
     }
 
     public static function canEdit($record): bool
     {
-        return Filament::auth()->user()?->can('tag.update') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('tag.update') ?? false);
     }
 
     public static function canDelete($record): bool
     {
-        return Filament::auth()->user()?->can('tag.delete') ?? false;
+        $user = Filament::auth()->user();
+        return $user?->hasRole('super_admin') || ($user?->can('tag.delete') ?? false);
     }
     
     public static function form(Schema $schema): Schema
